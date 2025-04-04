@@ -7,7 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/porjects") 
+@RequestMapping("/api/projects")
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
