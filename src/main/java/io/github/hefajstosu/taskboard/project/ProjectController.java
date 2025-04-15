@@ -2,7 +2,6 @@ package io.github.hefajstosu.taskboard.project;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -10,40 +9,37 @@ import java.util.List;
 @RequestMapping("/api/projects")
 public class ProjectController {
 
-    private final ProjectRepository projectRepository;
 
-    public ProjectController(ProjectRepository projectRepository) { 
-        this.projectRepository = projectRepository;
+    private final ProjectService projectService;
+
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService; 
     }
 
     @GetMapping
-    public List<Project> list() {
-        return projectRepository.findAll();
+    public List<ProjectResponse> list() {
+        return projectService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Project get(@PathVariable Long id) {
-        return projectRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public ProjectResponse get(@PathVariable Long id) {
+        return projectService.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Project create(@RequestBody Project project) {
-        return projectRepository.save(project);
+    public ProjectResponse create(@RequestBody ProjectRequest request){
+		return projectService.create(request);
     }
 
     @PutMapping("/{id}")
-    public Project update(@PathVariable Long id, @RequestBody Project body) {
-        Project project = get(id);
-        project.setName(body.getName());
-        project.setDescription(body.getDescription()); 
-        return projectRepository.save(project);
+    public ProjectResponse update(@PathVariable Long id, @RequestBody ProjectRequest request) {
+        return projectService.update(id, request);
     }
 
     @DeleteMapping("/{id}") 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
-        projectRepository.deleteById(id);
+        projectService.delete(id);
     }
 }

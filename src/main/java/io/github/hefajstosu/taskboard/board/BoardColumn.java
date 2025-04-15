@@ -1,6 +1,5 @@
 package io.github.hefajstosu.taskboard.board;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.hefajstosu.taskboard.project.Project;
 import jakarta.persistence.*;
 
@@ -11,8 +10,6 @@ public class BoardColumn {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "project_id")
     private Project project;
