@@ -1,5 +1,6 @@
 package io.github.hefajstosu.taskboard.project;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,12 @@ public class ProjectController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProjectResponse create(@RequestBody ProjectRequest request){
+    public ProjectResponse create(@Valid @RequestBody ProjectRequest request) {
 		return projectService.create(request);
     }
 
     @PutMapping("/{id}")
-    public ProjectResponse update(@PathVariable Long id, @RequestBody ProjectRequest request) {
+    public ProjectResponse update(@PathVariable Long id, @Valid @RequestBody ProjectRequest request) {
         return projectService.update(id, request);
     }
 

@@ -1,5 +1,6 @@
 package io.github.hefajstosu.taskboard.task;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class TaskController {
 
     @PostMapping("/columns/{columnId}/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskResponse create(@PathVariable Long columnId, @RequestBody TaskRequest request){
+    public TaskResponse create(@PathVariable Long columnId, @Valid @RequestBody TaskRequest request) { 
         return taskService.create(columnId, request);
     }
 
@@ -32,7 +33,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{id}")
-    public TaskResponse update(@PathVariable Long id, @RequestBody TaskRequest request) {
+    public TaskResponse update(@PathVariable Long id, @Valid @RequestBody TaskRequest request){
         return taskService.update(id, request);
     }
 

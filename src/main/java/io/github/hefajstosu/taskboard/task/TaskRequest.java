@@ -1,4 +1,11 @@
 package io.github.hefajstosu.taskboard.task;
 
-public record TaskRequest(String title, String description, Priority priority) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record TaskRequest(
+        @NotBlank @Size(max = 200) String title, 
+        @Size(max = 4000) String description,
+        Priority priority
+){
 }

@@ -1,4 +1,10 @@
 package io.github.hefajstosu.taskboard.project;
 
-public record ProjectRequest(String name, String description) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record ProjectRequest(
+        @NotBlank @Size(max = 100) String name,
+        @Size(max = 1000) String description
+) {
 }

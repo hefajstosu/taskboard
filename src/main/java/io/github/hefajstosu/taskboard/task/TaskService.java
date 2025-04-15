@@ -2,10 +2,9 @@ package io.github.hefajstosu.taskboard.task;
 
 import io.github.hefajstosu.taskboard.board.BoardColumn;
 import io.github.hefajstosu.taskboard.board.BoardColumnService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import io.github.hefajstosu.taskboard.common.NotFoundException;
 
 import java.util.List;
 
@@ -60,6 +59,6 @@ public class TaskService {
     }
     private Task getTask(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task " + id + " not found")); 
+                .orElseThrow(() -> new NotFoundException("Task", id));
     }
 }

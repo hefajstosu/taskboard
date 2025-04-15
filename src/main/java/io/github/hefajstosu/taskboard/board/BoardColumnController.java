@@ -1,5 +1,6 @@
 package io.github.hefajstosu.taskboard.board;
 
+import jakarta.validation.Valid; 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class BoardColumnController {
     } 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ColumnResponse create(@PathVariable Long projectId, @RequestBody ColumnRequest request){
+    public ColumnResponse create(@PathVariable Long projectId, @Valid @RequestBody ColumnRequest request) {
         return columnService.create(projectId, request);
     } 
 

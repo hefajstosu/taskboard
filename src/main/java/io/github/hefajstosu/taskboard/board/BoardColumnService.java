@@ -2,10 +2,9 @@ package io.github.hefajstosu.taskboard.board;
 
 import io.github.hefajstosu.taskboard.project.Project;
 import io.github.hefajstosu.taskboard.project.ProjectService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import io.github.hefajstosu.taskboard.common.NotFoundException;
 
 import java.util.List;
 
@@ -37,12 +36,12 @@ public class BoardColumnService {
     public void delete(Long projectId, Long columnId) {
         BoardColumn column = getColumn(columnId);
         if (!column.getProject().getId().equals(projectId)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Column " + columnId + " not found");
+            throw new NotFoundException("Column", columnId);
         }
         columnRepository.delete(column);
     }
     public BoardColumn getColumn(Long id){
         return columnRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Column " + id + " not found"));
+            .orElseThrow(() -> new NotFoundException("Column", id));
     }
 }

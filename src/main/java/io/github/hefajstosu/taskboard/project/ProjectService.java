@@ -1,9 +1,8 @@
 package io.github.hefajstosu.taskboard.project;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import io.github.hefajstosu.taskboard.common.NotFoundException;
 
 import java.util.List; 
 
@@ -48,6 +47,6 @@ public class ProjectService {
 
     public Project getProject(Long id){
         return projectRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Project", id));
     }
 }
