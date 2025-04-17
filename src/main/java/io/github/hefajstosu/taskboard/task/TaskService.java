@@ -64,7 +64,7 @@ public class TaskService {
             int to = Math.min(request.position(), tasks.size() - 1);
             for (Task other : tasks) {
                 int p = other.getPosition();
-                if(to > from && p > from && p < to) {
+                if (to > from && p > from && p <= to) {
                     other.setPosition(p - 1);
                 } else if (to < from && p >= to && p < from) {
                     other.setPosition(p + 1);
