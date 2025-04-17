@@ -37,6 +37,12 @@ public class TaskController {
         return taskService.update(id, request);
     }
 
+
+    @PatchMapping("/tasks/{id}/move")
+    public TaskResponse move(@PathVariable Long id, @Valid @RequestBody MoveTaskRequest request) {
+        return taskService.move(id, request);
+    }
+
     @DeleteMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
