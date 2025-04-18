@@ -21,6 +21,9 @@ public class BoardColumn {
     @Column(nullable = false)
     private int position;
 
+    // null = no limit
+    private Integer wipLimit;
+
     protected BoardColumn() {
     }
 
@@ -51,5 +54,13 @@ public class BoardColumn {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public Integer getWipLimit() {
+        return wipLimit;
+    }
+
+    public void setWipLimit(Integer wipLimit) {
+        this.wipLimit = wipLimit;
     }
 }

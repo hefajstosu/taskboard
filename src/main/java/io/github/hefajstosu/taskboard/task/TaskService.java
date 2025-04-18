@@ -2,6 +2,7 @@ package io.github.hefajstosu.taskboard.task;
 
 import io.github.hefajstosu.taskboard.board.BoardColumn;
 import io.github.hefajstosu.taskboard.board.BoardColumnService;
+import io.github.hefajstosu.taskboard.board.WipCheck; 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.github.hefajstosu.taskboard.common.BusinessException;
@@ -35,7 +36,9 @@ public class TaskService {
 
     public TaskResponse create(Long columnId, TaskRequest request) {
         BoardColumn column = columnService.getColumn(columnId);
-        Task task = new Task(column, request.title(), taskRepository.countByColumnId(columnId));
+        int count = taskRepository.countByColumnId(columnId);
+        ensureWipAllows(column, count);
+        Task task = new Task(column, request.title(), count);
         applyChanges(task, request);
         return TaskResponse.from(taskRepository.save(task));
     }
@@ -74,6 +77,7 @@ public class TaskService {
 		} else {
             List<Task> sourceTasks = taskRepository.findByColumnIdOrderByPosition(source.getId());
             List<Task> targetTasks = taskRepository.findByColumnIdOrderByPosition(target.getId());
+            ensureWipAllows(target, targetTasks.size());
             int to = Math.min(request.position(), targetTasks.size());
             sourceTasks.stream()
                     .filter(t -> t.getPosition() > from)
@@ -90,6 +94,15 @@ public class TaskService {
 
     public void delete(Long id) {
         taskRepository.delete(getTask(id));
+    }
+
+    private void ensureWipAllows(BoardColumn column, int currentTaskCount) {
+        switch(WipCheck.of(column, currentTaskCount)) {
+            case WipCheck.Allowed() -> {
+            }
+            case WipCheck.LimitReached(String name, int limit) ->
+                    throw new BusinessException("Column '%s' reached its WIP limit of %d".formatted(name, limit));
+        }
     }
 
     private void applyChanges(Task task, TaskRequest request) {

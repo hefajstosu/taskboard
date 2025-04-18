@@ -25,6 +25,12 @@ public class BoardColumnController {
         return columnService.create(projectId, request);
     } 
 
+    @PutMapping("/{columnId}")
+    public ColumnResponse update(@PathVariable Long projectId, @PathVariable Long columnId,
+                                 @Valid @RequestBody ColumnRequest request) {
+        return columnService.update(projectId, columnId, request);
+    } 
+
     @DeleteMapping("/{columnId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long projectId, @PathVariable Long columnId) {

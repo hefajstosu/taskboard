@@ -97,6 +97,23 @@ class TaskServiceTest {
         assertThatThrownBy(() -> taskService.move(100L, new MoveTaskRequest(50L, 0)))
                 .isInstanceOf(BusinessException.class);
     }
+    @Test
+    void respectsWipLimitOfTargetColumn() {
+        done.setWipLimit(2); 
+
+
+        assertThatThrownBy(() -> taskService.move(100L, new MoveTaskRequest(11L, 0)))
+                .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("WIP limit of 2");
+    }
+    @Test
+    void wipLimitDoesNotBlockReorderInSameColumn() {
+        todo.setWipLimit(4);
+
+        taskService.move(103L, new MoveTaskRequest(10L, 0));
+
+        assertThat(titlesByPosition(todoTasks)).containsExactly("todo-3", "todo-0", "todo-1", "todo-2");
+    }
 
     private static List<String> titlesByPosition(List<Task> tasks) {
         return tasks.stream() 

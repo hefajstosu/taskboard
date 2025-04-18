@@ -30,15 +30,28 @@ public class BoardColumnService {
     public ColumnResponse create(Long projectId, ColumnRequest request) {
         Project project = projectService.getProject(projectId);
         int position = columnRepository.countByProjectId(projectId);
-        return ColumnResponse.from(columnRepository.save(new BoardColumn(project, request.name(), position)));
+        BoardColumn column = new BoardColumn(project, request.name(), position);
+        column.setWipLimit(request.wipLimit());
+        return ColumnResponse.from(columnRepository.save(column));
+    }
+
+    public ColumnResponse update(Long projectId, Long columnId, ColumnRequest request) {
+		BoardColumn column = getColumn(projectId, columnId);
+        column.setName(request.name());
+        column.setWipLimit(request.wipLimit());
+        return ColumnResponse.from(column);
     }
 
     public void delete(Long projectId, Long columnId) {
+        columnRepository.delete(getColumn(projectId, columnId));
+    }
+
+    private BoardColumn getColumn(Long projectId, Long columnId) {
         BoardColumn column = getColumn(columnId);
         if (!column.getProject().getId().equals(projectId)){
             throw new NotFoundException("Column", columnId);
         }
-        columnRepository.delete(column);
+        return column;
     }
     public BoardColumn getColumn(Long id){
         return columnRepository.findById(id)
