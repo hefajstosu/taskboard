@@ -1,4 +1,4 @@
-package io.github.hefajstosu.taskboard.user;
+package io.github.hefajstosu.taskboard.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
