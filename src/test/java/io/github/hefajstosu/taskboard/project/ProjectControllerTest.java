@@ -30,9 +30,9 @@ class ProjectControllerTest {
 
     @Test
     void returnsProblemDetailWhenProjectMissing() throws Exception {
-        when(projectService.findById(42L)).thenThrow(new NotFoundException("Project", 42L));
+        when(projectService.findById(42L, 1L)).thenThrow(new NotFoundException("Project", 42L));
 
-		mockMvc.perform(get("/api/projects/42").with(jwt()))
+        mockMvc.perform(get("/api/projects/42").with(jwt().jwt(j -> j.subject("1"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Resource not found"))
                 .andExpect(jsonPath("$.detail").value("Project 42 not found"));
@@ -46,7 +46,7 @@ class ProjectControllerTest {
 
     @Test
     void rejectsBlankName() throws Exception {
-        mockMvc.perform(post("/api/projects").with(jwt())
+        mockMvc.perform(post("/api/projects").with(jwt().jwt(j -> j.subject("1")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"name": "  "}

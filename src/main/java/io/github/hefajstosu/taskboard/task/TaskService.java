@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.github.hefajstosu.taskboard.common.BusinessException;
 import io.github.hefajstosu.taskboard.common.NotFoundException;
+import io.github.hefajstosu.taskboard.project.ProjectAccess;
 
 import java.util.List;
 
@@ -16,26 +17,30 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final BoardColumnService columnService;
+    private final ProjectAccess access;
 
-    public TaskService(TaskRepository taskRepository, BoardColumnService columnService) {
+    public TaskService(TaskRepository taskRepository, BoardColumnService columnService, ProjectAccess access) {
         this.taskRepository = taskRepository;
         this.columnService = columnService;
+        this.access = access;
     }
 
     @Transactional(readOnly = true)
-    public List<TaskResponse> findByColumn(Long columnId) {
+    public List<TaskResponse> findByColumn(Long columnId, Long userId) { 
+        requireMember(columnService.getColumn(columnId), userId);
         return taskRepository.findByColumnIdOrderByPosition(columnId).stream()
             .map(TaskResponse::from)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public TaskResponse findById(Long id) {
-        return TaskResponse.from(getTask(id)); 
+    public TaskResponse findById(Long id, Long userId) {
+        return TaskResponse.from(getTask(id, userId));
     }
 
-    public TaskResponse create(Long columnId, TaskRequest request) {
+    public TaskResponse create(Long columnId, TaskRequest request, Long userId) {
         BoardColumn column = columnService.getColumn(columnId);
+        requireMember(column, userId);
         int count = taskRepository.countByColumnId(columnId);
         ensureWipAllows(column, count);
         Task task = new Task(column, request.title(), count);
@@ -43,16 +48,16 @@ public class TaskService {
         return TaskResponse.from(taskRepository.save(task));
     }
 
-    public TaskResponse update(Long id, TaskRequest request) {
-        Task task = getTask(id);
+    public TaskResponse update(Long id, TaskRequest request, Long userId) {
+        Task task = getTask(id, userId); 
         task.setTitle(request.title());
         applyChanges(task, request);
         return TaskResponse.from(task);
     }
 
     // TODO cleanup
-    public TaskResponse move(Long id, MoveTaskRequest request){
-        Task task = getTask(id);
+    public TaskResponse move(Long id, MoveTaskRequest request, Long userId) {
+        Task task = getTask(id, userId); 
         BoardColumn source = task.getColumn();
 		BoardColumn target = columnService.getColumn(request.columnId());
 
@@ -91,9 +96,8 @@ public class TaskService {
         return TaskResponse.from(task);
     }
 
-
-    public void delete(Long id) {
-        taskRepository.delete(getTask(id));
+    public void delete(Long id, Long userId) { 
+        taskRepository.delete(getTask(id, userId));
     }
 
     private void ensureWipAllows(BoardColumn column, int currentTaskCount) {
@@ -111,8 +115,15 @@ public class TaskService {
             task.setPriority(request.priority());
         }
     }
-    private Task getTask(Long id) {
-        return taskRepository.findById(id)
+
+    private Task getTask(Long id, Long userId) {
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Task", id));
+        requireMember(task.getColumn(), userId);
+        return task;
+    }
+
+    private void requireMember(BoardColumn column, Long userId){
+        access.requireMember(column.getProject().getId(), userId);
     }
 }

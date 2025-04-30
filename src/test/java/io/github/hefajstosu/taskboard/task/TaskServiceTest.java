@@ -4,6 +4,7 @@ import io.github.hefajstosu.taskboard.board.BoardColumn;
 import io.github.hefajstosu.taskboard.board.BoardColumnService;
 import io.github.hefajstosu.taskboard.common.BusinessException;
 import io.github.hefajstosu.taskboard.project.Project;
+import io.github.hefajstosu.taskboard.project.ProjectAccess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,8 +30,12 @@ class TaskServiceTest {
     @Mock 
     BoardColumnService columnService;
 
+    @Mock 
+    ProjectAccess access;
+
     @InjectMocks
     TaskService taskService;
+    static final Long USER_ID = 7L;
 
     Project project;
     BoardColumn todo;
@@ -60,27 +65,28 @@ class TaskServiceTest {
     }
     @Test
     void movesTaskUpWithinColumn() {
-        taskService.move(103L, new MoveTaskRequest(10L, 1));
+        taskService.move(103L, new MoveTaskRequest(10L, 1), USER_ID);
+
+
         assertThat(titlesByPosition(todoTasks)).containsExactly("todo-0", "todo-3", "todo-1", "todo-2");
     }
     @Test
     void movesTaskDownWithinColumn() {
-        taskService.move(100L, new MoveTaskRequest(10L, 2));
+        taskService.move(100L, new MoveTaskRequest(10L, 2), USER_ID);
 
         assertThat(titlesByPosition(todoTasks)).containsExactly("todo-1", "todo-2", "todo-0", "todo-3");
     }
     @Test
     void clampsPositionToEndOfColumn() {
-        taskService.move(101L, new MoveTaskRequest(10L, 99));
-
+        taskService.move(101L, new MoveTaskRequest(10L, 99), USER_ID);
         assertThat(titlesByPosition(todoTasks)).containsExactly("todo-0", "todo-2", "todo-3", "todo-1");
     }
     @Test
     void movesTaskToAnotherColumn() {
         Task moved = todoTasks.get(1);
 
-        taskService.move(101L, new MoveTaskRequest(11L, 1));
 
+        taskService.move(101L, new MoveTaskRequest(11L, 1), USER_ID);
 
         todoTasks.remove(moved); 
         doneTasks.add(moved);
@@ -93,16 +99,14 @@ class TaskServiceTest {
         Project other = withId(new Project("Other", null), 2L);
         BoardColumn foreign = withId(new BoardColumn(other, "Backlog", 0), 50L);
         lenient().when(columnService.getColumn(50L)).thenReturn(foreign);
-
-        assertThatThrownBy(() -> taskService.move(100L, new MoveTaskRequest(50L, 0)))
+        assertThatThrownBy(() -> taskService.move(100L, new MoveTaskRequest(50L, 0), USER_ID))
                 .isInstanceOf(BusinessException.class);
     }
     @Test
     void respectsWipLimitOfTargetColumn() {
         done.setWipLimit(2); 
 
-
-        assertThatThrownBy(() -> taskService.move(100L, new MoveTaskRequest(11L, 0)))
+        assertThatThrownBy(() -> taskService.move(100L, new MoveTaskRequest(11L, 0), USER_ID))
                 .isInstanceOf(BusinessException.class)
                     .hasMessageContaining("WIP limit of 2");
     }
@@ -110,7 +114,7 @@ class TaskServiceTest {
     void wipLimitDoesNotBlockReorderInSameColumn() {
         todo.setWipLimit(4);
 
-        taskService.move(103L, new MoveTaskRequest(10L, 0));
+        taskService.move(103L, new MoveTaskRequest(10L, 0), USER_ID);
 
         assertThat(titlesByPosition(todoTasks)).containsExactly("todo-3", "todo-0", "todo-1", "todo-2");
     }
