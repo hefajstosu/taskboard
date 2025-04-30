@@ -61,7 +61,7 @@ public class ProjectService {
     }
 
     public void delete(Long id, Long userId) {
-        Project project = access.requireMember(id, userId).getProject();
+        Project project = access.requireOwner(id, userId).getProject();
         projectRepository.delete(project);
     }
 
