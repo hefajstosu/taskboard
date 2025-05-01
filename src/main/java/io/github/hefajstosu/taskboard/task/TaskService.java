@@ -134,7 +134,8 @@ public class TaskService {
         }
     }
 
-    private Task getTask(Long id, Long userId) {
+    // checks acces
+    public Task getTask(Long id, Long userId) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Task", id));
         requireMember(task.getColumn(), userId);
