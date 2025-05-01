@@ -2,6 +2,10 @@ package io.github.hefajstosu.taskboard.task;
 
 import io.github.hefajstosu.taskboard.security.CurrentUserId;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +24,15 @@ public class TaskController {
     @GetMapping("/columns/{columnId}/tasks")
     public List<TaskResponse> list(@PathVariable Long columnId, @CurrentUserId Long userId) {
         return taskService.findByColumn(columnId, userId);
+    }
+
+    @GetMapping("/projects/{projectId}/tasks")
+    public Page<TaskResponse> search(@PathVariable Long projectId,
+                                     TaskFilter filter,
+                                     @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+                                     Pageable pageable,
+                                     @CurrentUserId Long userId) {
+        return taskService.search(projectId, filter, pageable, userId);
     }
 
     @PostMapping("/columns/{columnId}/tasks")

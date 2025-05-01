@@ -3,6 +3,8 @@ package io.github.hefajstosu.taskboard.task;
 import io.github.hefajstosu.taskboard.board.BoardColumn;
 import io.github.hefajstosu.taskboard.board.BoardColumnService;
 import io.github.hefajstosu.taskboard.board.WipCheck; 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.github.hefajstosu.taskboard.common.BusinessException;
@@ -38,6 +40,13 @@ public class TaskService {
         return taskRepository.findByColumnIdOrderByPosition(columnId).stream()
             .map(TaskResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TaskResponse> search(Long projectId, TaskFilter filter, Pageable pageable, Long userId) {
+        access.requireMember(projectId, userId);
+        return taskRepository.findAll(TaskSpecifications.matching(projectId, filter), pageable)
+                .map(TaskResponse::from);
     }
 
     @Transactional(readOnly = true)
