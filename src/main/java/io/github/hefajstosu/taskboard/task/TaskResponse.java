@@ -1,6 +1,9 @@
 package io.github.hefajstosu.taskboard.task;
 
+import io.github.hefajstosu.taskboard.user.UserSummary;
+
 import java.time.Instant;
+import java.time.LocalDate; 
 
 public record TaskResponse(
         Long id,
@@ -9,6 +12,8 @@ public record TaskResponse(
         String description,
         Priority priority,
         int position,
+        UserSummary assignee,
+        LocalDate dueDate,
         Instant createdAt
 ) {
 
@@ -20,6 +25,8 @@ public record TaskResponse(
                 task.getDescription(),
                 task.getPriority(),
                 task.getPosition(),
+                UserSummary.of(task.getAssignee()),
+                task.getDueDate(),
                 task.getCreatedAt()
         ); 
     }

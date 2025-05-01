@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.github.hefajstosu.taskboard.common.BusinessException;
 import io.github.hefajstosu.taskboard.common.NotFoundException;
 import io.github.hefajstosu.taskboard.project.ProjectAccess;
+import io.github.hefajstosu.taskboard.user.UserService;
 
 import java.util.List;
 
@@ -18,11 +19,17 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final BoardColumnService columnService;
     private final ProjectAccess access;
+    private final UserService userService;
 
-    public TaskService(TaskRepository taskRepository, BoardColumnService columnService, ProjectAccess access) {
+
+    public TaskService(TaskRepository taskRepository,
+                       BoardColumnService columnService,
+                       ProjectAccess access,
+                       UserService userService){
         this.taskRepository = taskRepository;
         this.columnService = columnService;
         this.access = access;
+        this.userService = userService;
     }
 
     @Transactional(readOnly = true)
@@ -113,6 +120,17 @@ public class TaskService {
         task.setDescription(request.description());
         if(request.priority() != null) {
             task.setPriority(request.priority());
+        }
+        task.setDueDate(request.dueDate());
+
+        if (request.assigneeId() == null) {
+            task.setAssignee(null);
+		} else {
+            Long projectId = task.getColumn().getProject().getId();
+            if (!access.isMember(projectId, request.assigneeId())) {
+                throw new BusinessException("Assignee must be a member of the project");
+            }
+            task.setAssignee(userService.getUser(request.assigneeId()));
         }
     }
 

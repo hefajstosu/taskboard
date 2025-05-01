@@ -21,6 +21,10 @@ public class ProjectAccess {
                 .orElseThrow(() -> new NotFoundException("Project", projectId));
     }
 
+    public boolean isMember(Long projectId, Long userId) {
+        return memberRepository.existsByProjectIdAndUserId(projectId, userId);
+    }
+
     public ProjectMember requireOwner(Long projectId, Long userId) {
         ProjectMember member = requireMember(projectId, userId);
         if (!member.isOwner()){

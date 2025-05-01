@@ -5,6 +5,7 @@ import io.github.hefajstosu.taskboard.board.BoardColumnService;
 import io.github.hefajstosu.taskboard.common.BusinessException;
 import io.github.hefajstosu.taskboard.project.Project;
 import io.github.hefajstosu.taskboard.project.ProjectAccess;
+import io.github.hefajstosu.taskboard.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,9 @@ class TaskServiceTest {
 
     @Mock 
     ProjectAccess access;
+
+    @Mock 
+    UserService userService;
 
     @InjectMocks
     TaskService taskService;
@@ -117,6 +121,14 @@ class TaskServiceTest {
         taskService.move(103L, new MoveTaskRequest(10L, 0), USER_ID);
 
         assertThat(titlesByPosition(todoTasks)).containsExactly("todo-3", "todo-0", "todo-1", "todo-2");
+    }
+    @Test
+    void assigneeHasToBeProjectMember() {
+        lenient().when(access.isMember(1L, 99L)).thenReturn(false);
+
+        assertThatThrownBy(() -> taskService.update(100L, new TaskRequest("todo-0", null, null, 99L, null), USER_ID))
+                .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("member");
     }
 
     private static List<String> titlesByPosition(List<Task> tasks) {

@@ -1,9 +1,11 @@
 package io.github.hefajstosu.taskboard.task;
 
 import io.github.hefajstosu.taskboard.board.BoardColumn;
+import io.github.hefajstosu.taskboard.user.User;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.time.LocalDate; 
 
 @Entity
 @Table(name = "tasks")
@@ -26,6 +28,12 @@ public class Task {
 
     @Column(nullable = false)
     private int position;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
+
+    private LocalDate dueDate;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -86,6 +94,21 @@ public class Task {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public User getAssignee() {
+        return assignee;
+    }
+    public void setAssignee(User assignee) {
+        this.assignee = assignee;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
     public Instant getCreatedAt() {
