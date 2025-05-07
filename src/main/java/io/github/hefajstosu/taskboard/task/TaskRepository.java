@@ -1,5 +1,6 @@
 package io.github.hefajstosu.taskboard.task;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -10,4 +11,8 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     List<Task> findByColumnIdOrderByPosition(Long columnId);
 
     int countByColumnId(Long columnId);
+
+    // fetch assignee too
+    @EntityGraph(attributePaths = "assignee")
+    List<Task> findByColumnProjectIdOrderByPosition(Long projectId);
 }
