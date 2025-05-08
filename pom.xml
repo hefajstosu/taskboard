@@ -17,6 +17,8 @@
 
     <properties>
         <java.version>23</java.version>
+        <!-- docker 29 -->
+        <testcontainers.version>1.21.4</testcontainers.version>
     </properties>
 
     <dependencies>
