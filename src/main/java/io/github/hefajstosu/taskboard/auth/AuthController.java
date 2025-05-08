@@ -3,6 +3,7 @@ package io.github.hefajstosu.taskboard.auth;
 import io.github.hefajstosu.taskboard.security.TokenService;
 import io.github.hefajstosu.taskboard.user.UserResponse;
 import io.github.hefajstosu.taskboard.user.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,11 +23,14 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
+    @SecurityRequirements
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
         return UserResponse.from(userService.register(request.email(), request.displayName(), request.password()));
     }
+
+    @SecurityRequirements
     @PostMapping("/login")
     public TokenResponse login(@Valid @RequestBody LoginRequest request) {
         return userService.authenticate(request.email(), request.password())
