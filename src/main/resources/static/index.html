@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TaskBoard</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header>
+    <h1>TaskBoard</h1>
+    <div id="user-bar" hidden>
+        <span id="user-name"></span>
+        <button id="logout" class="link">Log out</button>
+    </div>
+</header>
+
+<main>
+    <section id="auth" class="card">
+        <h2>Sign in</h2>
+        <form id="auth-form">
+            <input name="email" type="email" placeholder="Email" required>
+            <input name="displayName" placeholder="Display name (register only)">
+            <input name="password" type="password" placeholder="Password" required minlength="8">
+            <div class="row">
+                <button type="submit" data-action="login">Log in</button>
+                <button type="submit" data-action="register" class="secondary">Register</button>
+            </div>
+        </form>
+    </section>
+
+    <section id="app" hidden>
+        <div class="toolbar">
+            <select id="project-select"></select>
+            <form id="new-project" class="inline">
+                <input name="name" placeholder="New project" required>
+                <button>Create</button>
+            </form>
+            <form id="new-column" class="inline">
+                <input name="name" placeholder="New column" required>
+                <input name="wipLimit" type="number" min="1" placeholder="WIP">
+                <button>Add column</button>
+            </form>
+        </div>
+        <div id="board" class="board"></div>
+    </section>
+
+    <div id="toast" hidden></div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
