@@ -10,5 +10,17 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  # --profile app
+  app:
+    build: .
+    profiles: [ app ]
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/taskboard
+      JWT_SECRET: change-me-in-production-at-least-32-bytes
+    ports:
+      - "8080:8080"
+
 volumes:
   pgdata:
