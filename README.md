@@ -4,7 +4,7 @@ Simple kanban board / task manager. REST API in Java 23 + Spring Boot 3.3, plus 
 
 ## Features
 
-- projects, members, roles (owner / member). non-members recieve 404
+- projects, members, roles (owner / member). non-members receive 404
 - columns with optional WIP limit
 - tasks - priority, assignee, due date, comments
 - move tasks between columns (drag & drop in the UI)
@@ -20,7 +20,7 @@ Simple kanban board / task manager. REST API in Java 23 + Spring Boot 3.3, plus 
 - PostgreSQL 16 + Flyway
 - JWT with spring oauth2 resource server
 - springdoc-openapi
-- JUnit 5, Mockito, Testcontainers (real Postgress)
+- JUnit 5, Mockito, Testcontainers (real Postgres)
 - Docker, GitHub Actions
 
 Also tried some newer java stuff - records everywhere, sealed interface + pattern matching in switch (WIP check), virtual threads.
@@ -75,4 +75,4 @@ Rest is in swagger.
 ./mvnw verify
 ```
 
-Integration test uses Testcontainers, its skiped if there is no docker.
+Integration test uses Testcontainers, its skipped if there is no docker.
